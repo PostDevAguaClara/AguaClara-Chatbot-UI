@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   console.log("Prompt:", prompt);
 
   const response = await fetch(
-    "https://frhujci2wb.execute-api.us-east-2.amazonaws.com/prod/",
+    "https://wgyix93bfk.execute-api.us-east-2.amazonaws.com/prod/",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
