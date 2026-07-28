@@ -8,9 +8,7 @@ export async function POST(req: Request) {
 
   console.log("Prompt:", prompt);
 
-  const response = await fetch(
-    "https://wgyix93bfk.execute-api.us-east-2.amazonaws.com/prod/",
-    {
+  const response = await fetch(process.env.BEDROCK_API_URL!, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt })
