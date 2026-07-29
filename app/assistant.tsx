@@ -22,8 +22,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { ThemeToggle } from "@/components/theme-toggle";
-import Image from "next/image";
 
 export const Assistant = () => {
   const runtime = useChatRuntime({
@@ -39,30 +37,26 @@ export const Assistant = () => {
         <div className="flex h-dvh w-full pr-0.5">
           <ThreadListSidebar />
           <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center justify-between border-b px-4">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger />
-                <Separator orientation="vertical" className="mr-2 h-4" />
-
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/images/aguaclara-icon.png"
-                    alt="AguaClara"
-                    width={100}
-                    height={100}
-                    className="h-9 w-auto"
-                  />
-
-                  <div>
-                    <h1 className="text-lg font-semibold">AguaClara Chatbot</h1>
-                    <p className="text-sm text-muted-foreground">
-                      Search AguaClara documentation
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <ThemeToggle />
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink
+                      href="https://www.assistant-ui.com/docs/getting-started"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Build Your Own ChatGPT UX
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Starter Template</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </header>
             <div className="flex-1 overflow-hidden">
               <Thread />
