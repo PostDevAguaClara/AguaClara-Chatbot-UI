@@ -1,5 +1,27 @@
 import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
 
+function cleanQuote(text : string) {
+    return text
+        .replace(/\r\n?/g, "\n")          // Normalize line endings
+        .split("\n")
+        .map(line => line.trim())         // Remove leading/trailing whitespace
+        .filter(line => line.length > 0)  // Remove blank lines
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n")       // At most one blank line
+        .trim();
+}
+
+function blockQuote(text : string, maxLength = 512) {
+    if (text.length > maxLength) {
+      const end = text.lastIndexOf(" ", maxLength);
+      text = text.substring(0, end > 0 ? end : maxLength) + "...";
+    }
+    return text
+        .split("\n")
+        .map(line => `> ${line}`)
+        .join("\n");
+}
+
 export async function POST(req: Request) {
   // Still parse the request so the frontend doesn't error
   const { messages } = await req.json();
@@ -55,7 +77,7 @@ export async function POST(req: Request) {
       message += `🔗 ${source.url}\n\n`;
       message += `Excerpts: \n\n`;
       for (const quote of source.quotes) {
-        message += `> \"${quote}\"\n\n`
+        message += `${blockQuote(cleanQuote(quote))}\n\n`
       }
       message += `\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n`;
     }
