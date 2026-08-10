@@ -1,5 +1,6 @@
 import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
 
+const CHAT_URL = "https://qme4rjba60.execute-api.us-east-2.amazonaws.com/prod/";
 function cleanQuote(text : string) {
     return text
         .replace(/\r\n?/g, "\n")          // Normalize line endings
@@ -23,15 +24,13 @@ function blockQuote(text : string, maxLength = 512) {
 }
 
 export async function POST(req: Request) {
-  // Still parse the request so the frontend doesn't error
   const { messages } = await req.json();
   const lastMessage = messages.at(-1);
   const prompt = lastMessage?.parts?.[0]?.text;
 
   console.log("Prompt:", prompt);
 
-  const response = await fetch(
-    "https://wgyix93bfk.execute-api.us-east-2.amazonaws.com/prod/",
+  const response = await fetch(CHAT_URL,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
