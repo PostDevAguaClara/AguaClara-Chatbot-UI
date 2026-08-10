@@ -1,6 +1,8 @@
 import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
 
 const CHAT_URL = "https://qme4rjba60.execute-api.us-east-2.amazonaws.com/prod/";
+const CITATIONS_HEADER = "=-=-=-=-=-=-=- Sources -=-=-=-=-=-=-=\n\n";
+
 function cleanQuote(text : string) {
     return text
         .replace(/\r\n?/g, "\n")          // Normalize line endings
@@ -23,18 +25,35 @@ function blockQuote(text : string, maxLength = 512) {
         .join("\n");
 }
 
+function removeCitations(text : string) {
+  const citationIndex = text.indexOf(CITATIONS_HEADER);
+  if (citationIndex === -1) { return text; }
+  return text.substring(0, citationIndex).trim();
+}
+
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  const lastMessage = messages.at(-1);
-  const prompt = lastMessage?.parts?.[0]?.text;
 
-  console.log("Prompt:", prompt);
+  const lastMessage = messages.at(-1)?.parts?.[0]?.text;
+  
+  const conversation = messages.map((message: any) => ({
+      role: message.role,
+      content: removeCitations(
+          message.parts
+          ?.filter((part: any) => part.type === "text")
+          .map((part: any) => part.text)
+          .join("") ?? "",
+      )
+  })).filter((message: any) => message.content.length > 0);
+
+  console.log("Last Message: ", lastMessage);
+  console.log("Conversation: ", JSON.stringify(conversation, null, 2));
 
   const response = await fetch(CHAT_URL,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ lastMessage, conversation })
     }
   )
   const data = await response.json();
@@ -70,7 +89,7 @@ export async function POST(req: Request) {
   // Compile message
   let message = `${data.output}\n\n\n\n`;
   if (sources.size > 0) {
-    message += `=-=-=-=-=-=-=- Sources -=-=-=-=-=-=-=\n\n`;
+    message += CITATIONS_HEADER;
     for (const source of sources.values()) {
       message += `📁 ${source.path}\n\n`;
       message += `🔗 ${source.url}\n\n`;
